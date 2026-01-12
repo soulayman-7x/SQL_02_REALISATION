@@ -1,0 +1,124 @@
+
+
+1. Modifier la date de publication de certains articles pour l'année 2025
+
+USE blogdb;
+
+=> Database changed
+
+UPDATE article
+    -> SET article_date_pub = '2025-05-15 14:30:00'
+    -> WHERE article_id = 1;
+
+=> Query OK, 1 row affected (0.03 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+
+2. Marquer un article comme (Non publié)
+
+UPDATE article
+    -> SET article_status = 0
+    -> WHERE article_id = 3;
+
+=> Query OK, 0 rows affected (0.00 sec)
+Rows matched: 0  Changed: 0  Warnings: 0
+
+3. Compter combien d'articles chaque utilisateur a écrit.
+
+ SELECT
+    -> u.user_name AS Auteur,
+    -> COUNT(a.article_id) AS Nombre_Articles
+    -> FROM user u
+    -> LEFT JOIN article a ON u.user_id = a.user_id
+    -> GROUP BY u.user_id
+    -> ORDER BY Nombre_Articles DESC;
+
++--------------+-----------------+
+| Auteur       | Nombre_Articles |
++--------------+-----------------+
+| soulayman    |               5 |
+| User_100     |               4 |
+| EL_Houssine  |               3 |
+| John_Doe     |               2 |
+| Bob          |               1 |
+| Charlie      |               1 |
+| User_222     |               0 |
+| Ahmed Alami  |               0 |
+| Fatima Zahra |               0 |
+| Omar Khalid  |               0 |
++--------------+-----------------+
+
+
+
+4. Analyser l'activité du blog pour l'année 2025.
+
+ SELECT
+    -> MONTH(article_date_pub) AS Mois,
+    -> COUNT(*) AS Total_Articles
+    -> FROM article
+    -> WHERE YEAR(article_date_pub) = 2025
+    ->   AND article_status = 1 -- Seulement les articles publiés
+    -> GROUP BY MONTH(article_date_pub)
+    -> ORDER BY Mois ASC;
+
++------+----------------+
+| Mois | Total_Articles |
++------+----------------+
+|    5 |              1 |
+|    6 |              1 |
+|    7 |              3 |
+|   11 |              1 |
+|   12 |              4 |
++------+----------------+
+
+
+5. Identifier les articles qui n'ont pas encore d'image associée.
+
+SELECT a.article_title
+    -> FROM article a
+    -> LEFT JOIN post_image pi ON a.article_id = pi.article_id
+    -> WHERE pi.image_id IS NULL;
+
++-----------------------+
+| article_title         |
++-----------------------+
+| Article Archived      |
+| Article Last Month    |
+| Article Test 155      |
+| Article Today         |
+| Bienvenue sur le blog |
+| Christmas Tech Gifts  |
+| Draft Article         |
+| Intro to AI           |
+| MySQL Tips            |
+| New Year Resolutions  |
+| Nouveau post          |
+| Nouveau post          |
+| Protect your data     |
+| Web Trends 2025       |
++-----------------------+
+
+6. Supprimer les commentaires contenant des mots interdits (ex: Spam).
+
+DELETE FROM comment
+    -> WHERE comment_content LIKE '%Spam%';
+
+=> Query OK, 0 rows affected (0.01 sec)
+
+7. Publier tous les articles de la catégorie "Web Development"
+
+UPDATE article
+    -> SET article_status = 1
+    -> WHERE category_id = (SELECT category_id FROM category WHERE category_name = 'Web Development')
+    ->   AND article_status = 0;
+
+=> Query OK, 0 rows affected (0.01 sec)
+Rows matched: 0  Changed: 0  Warnings: 0
+
+8. Mettre à jour l'email de l'utilisateur "John_Doe".
+
+UPDATE user
+    -> SET user_email = 'john.new@email.com'
+    -> WHERE user_name = 'John_Doe';
+
+=> Query OK, 1 row affected (0.01 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
